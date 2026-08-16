@@ -1,0 +1,3 @@
+# LVCHA Bridge 依赖 (唯一第三方库, 其余均为 Python 标准库)
+# Linux ARM64: pip install -r requirements.txt  (pycryptodome 提供 aarch64 预编译 wheel)
+pycryptodome>=3.20
