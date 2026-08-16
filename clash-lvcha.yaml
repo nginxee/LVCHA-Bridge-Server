@@ -1,0 +1,45 @@
+# 6f3a8c21-9d4e-4b2a-8c57-1e0d2b3f4a5b
+# name: LVCHA
+# type: local
+# desc: LVCHA VPN 桥接 (SOCKS5 127.0.0.1:10808, 需先运行 start_bridge)
+# updated: 2026-08-17T01:00:00.000Z
+# ============================================================
+# 三合一: 适用于 Windows / Linux / Clash Verge Rev
+# 用法:
+#   Windows:  Clash Verge 导入本文件, 或复制到 profiles 目录
+#   Linux:    find-process-mode: strict 需 root (或 CAP_NET_ADMIN)
+#   Verge:    订阅页 -> 新建 -> 类型 Local -> 粘贴 proxies 以下内容
+# 注意: 本地 DNS 被污染, Clash 必须用 TUN + fake-ip (或远端 DoH),
+#       让域名原样交给 bridge (ATYP=3) 走隧道 DNS 解析。
+# ============================================================
+
+proxies:
+  - name: "LVCHA"
+    type: socks5
+    server: 127.0.0.1
+    port: 10808
+    udp: false
+
+proxy-groups:
+  - name: "PROXY"
+    type: select
+    proxies:
+      - LVCHA
+      - DIRECT
+
+# 防环路: bridge 进程直连, 不被 Clash TUN 拦截
+# Windows: python.exe / pythonw.exe
+# Linux:   python3 / python (需 root 或 CAP_NET_ADMIN)
+find-process-mode: strict
+
+rules:
+  # Windows 进程
+  - PROCESS-NAME,python.exe,DIRECT
+  - PROCESS-NAME,pythonw.exe,DIRECT
+  # Linux 进程
+  - PROCESS-NAME,python3,DIRECT
+  - PROCESS-NAME,python,DIRECT
+  # 国内直连
+  - GEOIP,CN,DIRECT
+  # 其余走代理
+  - MATCH,PROXY
